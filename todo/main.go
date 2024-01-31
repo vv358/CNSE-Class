@@ -57,7 +57,27 @@ const (
 //						   use it.  See github.com/spf13/cobra for information
 //						   on how to use it.
 //
-//	 YOUR ANSWER: <GOES HERE>
+//	 YOUR ANSWER: <processCmdLineFlags use the flag package in Go to parse
+// the command line flags. The function first defines the command-line flags
+// using the flag package. The flags are then parsed using flag.Parse(). The
+// flag.Visit method iterate over the set flags and determine the corresponding
+//  operation to be performed. The function returns the determined AppOptType
+// and any encountered errors
+//
+// Command-Line Flags used here are:
+// - "db": Specifies the name of the database file. Default is "./data/todo.json".
+// - "restore": If set to true, triggers the restoration of the database from a backup file.
+// - "l": If set to true, lists all the items in the database.
+// - "q": Specifies the item ID for query operations on the database.
+// - "a": Specifies a JSON string to add a new item to the database.
+// - "u": Specifies a JSON string to update an existing item in the database.
+// - "d": Specifies the item ID for deleting an item from the database.
+// - "s": If set to true, changes the 'done' status of an item to true or false.
+//
+// Return Values are:
+// - AppOptType:The type of operation to be performed like LIST_DB_ITEM, ADD_DB_ITEM.
+// - error: Returns an error.>
+
 func processCmdLineFlags() (AppOptType, error) {
 	flag.StringVar(&dbFileNameFlag, "db", "./data/todo.json", "Name of the database file")
 	flag.BoolVar(&restoreDbFlag, "restore", false, "Restore the database from the backup file")
@@ -109,6 +129,11 @@ func processCmdLineFlags() (AppOptType, error) {
 		case "s":
 			//For extra credit you will need to change some things here
 			//and also in main under the CHANGE_ITEM_STATUS case
+			if queryFlag == 0 {
+				fmt.Println("Error: -s option requires a valid item Id. Use -q to specify the item Id.")
+				appOpt = INVALID_APP_OPT
+				break
+			}
 			appOpt = CHANGE_ITEM_STATUS
 		default:
 			appOpt = INVALID_APP_OPT
@@ -213,7 +238,14 @@ func main() {
 		//For the CHANGE_ITEM_STATUS extra credit you will also
 		//need to add some code here
 		fmt.Println("Running CHANGE_ITEM_STATUS...")
-		fmt.Println("Not implemented yet, but it can be for extra credit")
+
+		err := todo.ChangeItemDoneStatus(queryFlag, itemStatusFlag)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			break
+		}
+
+		//fmt.Println("Not implemented yet, but it can be for extra credit")
 		fmt.Println("Ok")
 	default:
 		fmt.Println("INVALID_APP_OPT")

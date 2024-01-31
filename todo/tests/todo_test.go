@@ -73,8 +73,14 @@ func TestAddHardCodedItem(t *testing.T) {
 	//I will get you started, uncomment the lines below to add to the DB
 	//and ensure no errors:
 	//---------------------------------------------------------------
-	//err := DB.AddItem(item)
-	//assert.NoError(t, err, "Error adding item to DB")
+
+	err := DB.AddItem(item)
+	assert.NoError(t, err, "Error adding item to DB")
+
+	addedItem, err := DB.GetItem(999)
+	assert.NoError(t, err, "Error looking up item in the DB")
+
+	assert.Equal(t, item, addedItem, "Added item does not match the original item")
 
 	//TODO: Now finish the test case by looking up the item in the DB
 	//and making sure it matches the item that you put in the DB above
@@ -90,6 +96,12 @@ func TestAddRandomStructItem(t *testing.T) {
 	assert.NoError(t, err, "Created fake item OK")
 
 	//TODO: Complete the test
+	err = DB.AddItem(item)
+	assert.NoError(t, err, "Error adding item to DB")
+	addedItem, err := DB.GetItem(item.Id)
+	assert.NoError(t, err, "Error looking up item in the DB")
+	assert.Equal(t, item, addedItem, "Added item does not match the original item")
+
 }
 
 func TestAddRandomItem(t *testing.T) {
@@ -102,6 +114,11 @@ func TestAddRandomItem(t *testing.T) {
 
 	t.Log("Testing Adding an Item with Random Fields: ", item)
 
+	err := DB.AddItem(item)
+	assert.NoError(t, err, "Error adding item to DB")
+	addedItem, err := DB.GetItem(item.Id)
+	assert.NoError(t, err, "Error looking up item in the DB")
+	assert.Equal(t, item, addedItem, "Added item does not match the original item")
 }
 
 // TODO: Please delete this test from your submission, it does not do anything
@@ -109,10 +126,53 @@ func TestAddRandomItem(t *testing.T) {
 // and then implment them later.  The go testing framework provides a
 // Skip() function that just tells the testing framework to skip or ignore
 // this test function
-func TestAddPlaceholderTest(t *testing.T) {
-	t.Skip("Placeholder test not implemented yet")
-}
 
 //TODO: Create additional tests to showcase the correct operation of your program
 //for example getting an item, getting all items, updating items, and so on. Be
 //creative here.
+
+func TestGetAllItems(t *testing.T) {
+	item1 := db.ToDoItem{Id: 100, Title: "Task 1", IsDone: false}
+	item2 := db.ToDoItem{Id: 120, Title: "Task 2", IsDone: true}
+	err := DB.AddItem(item1)
+	assert.NoError(t, err, "Error adding item1 to DB")
+	err = DB.AddItem(item2)
+	assert.NoError(t, err, "Error adding item2 to DB")
+
+	todoList, err := DB.GetAllItems()
+	assert.NoError(t, err, "Error getting all items from the DB")
+	for _, item := range todoList {
+		DB.PrintItem(item)
+	}
+}
+
+func TestOneItem(t *testing.T) {
+	item1 := db.ToDoItem{Id: 100, Title: "Task 1", IsDone: false}
+	item2 := db.ToDoItem{Id: 150, Title: "Task 2", IsDone: true}
+	err := DB.AddItem(item1)
+	assert.NoError(t, err, "Error adding item1 to DB")
+	err = DB.AddItem(item2)
+	assert.NoError(t, err, "Error adding item2 to DB")
+
+	item, err := DB.GetItem(150)
+	assert.NoError(t, err, "Error getting all items from the DB")
+	DB.PrintItem(item)
+
+}
+
+func TestUpdateItem(t *testing.T) {
+
+	item1 := db.ToDoItem{Id: 500, Title: "Update Test", IsDone: false}
+	err := DB.AddItem(item1)
+	assert.NoError(t, err, "Error adding initial item to DB")
+
+	updatedItem := db.ToDoItem{Id: 500, Title: "After Update", IsDone: true}
+
+	err = DB.UpdateItem(updatedItem)
+	assert.NoError(t, err, "Error updating item in DB")
+
+	retrievedItem, err := DB.GetItem(500)
+	assert.NoError(t, err, "Error getting updated item from the DB")
+
+	assert.Equal(t, updatedItem, retrievedItem, "Updated item does not match the retrieved item")
+}
