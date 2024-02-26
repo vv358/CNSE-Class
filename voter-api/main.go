@@ -75,23 +75,26 @@ func main() {
 	//PUT - Update
 	//DELETE - Delete
 
-	app.Get("/todo", apiHandler.ListAllTodos)
-	app.Post("/todo", apiHandler.AddToDo)
-	app.Put("/todo", apiHandler.UpdateToDo)
-	app.Delete("/todo", apiHandler.DeleteAllToDo)
-	app.Delete("/todo/:id<int>", apiHandler.DeleteToDo)
-	app.Get("/todo/:id<int>", apiHandler.GetToDo)
+	// app.Put("/todo", apiHandler.UpdateToDo)
+	// app.Delete("/todo", apiHandler.DeleteAllToDo)
+	// app.Delete("/todo/:id<int>", apiHandler.DeleteToDo)
+	app.Get("/voters", apiHandler.ListAllVoters)
+	app.Get("/voters/:id<int>", apiHandler.GetVoters)
+	app.Get("/voters/:id<int>/polls", apiHandler.GetVotersPoll)
+	app.Get("/voters/:id<int>/polls/:pollid<int>", apiHandler.GetVotersPollId)
+	app.Post("/voters", apiHandler.AddVoters)
+	app.Post("/voters/:id<int>/polls", apiHandler.AddVotersPoll)
 
 	app.Get("/crash", apiHandler.CrashSim)
 	app.Get("/crash2", apiHandler.CrashSim2)
 	app.Get("/crash3", apiHandler.CrashSim3)
-	app.Get("/health", apiHandler.HealthCheck)
+	app.Get("/voters/health", apiHandler.HealthCheck)
 
 	//We will now show a common way to version an API and add a new
 	//version of an API handler under /v2.  This new API will support
 	//a path parameter to search for todos based on a status
-	v2 := app.Group("/v2")
-	v2.Get("/todo", apiHandler.ListSelectTodos)
+	// v2 := app.Group("/v2")
+	// v2.Get("/todo", apiHandler.ListSelectTodos)
 
 	serverPath := fmt.Sprintf("%s:%d", hostFlag, portFlag)
 	log.Println("Starting server on ", serverPath)
