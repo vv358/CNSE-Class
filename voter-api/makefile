@@ -9,11 +9,15 @@ help:
 	@echo "	   run					Run the todo program from code"
 	@echo "	   run-bin				Run the todo executable"
 	@echo "	   load-db				Add sample data via curl"
-	@echo "	   get-by-id			Get a todo by id pass id=<id> on command line"
+	@echo "	   get-by-voterid		Get a todo by id pass id=<id> on command line"
+	@echo "	   get-polls		    Get a todo by id pass id=<id> on command line"
+	@echo "	   get-by-pollid		Get a todo by id pass id=<id> on command line"
 	@echo "	   get-all				Get all todos"
-	@echo "	   update-2				Update record 2, pass a new title in using title=<title> on command line"
+	@echo "	   update-by-voterid	Update record 2, pass a new title in using title=<title> on command line"
+	@echo "	   update-by-pollid		Update record 2, pass a new title in using title=<title> on command line"
 	@echo "	   delete-all			Delete all todos"
-	@echo "	   delete-by-id			Delete a todo by id pass id=<id> on command line"
+	@echo "	   delete-by-voterid	Delete a todo by id pass id=<id> on command line"
+	@echo "	   delete-by-voterid	Delete a todo by id pass id=<id> on command line"
 	@echo "	   get-v2				Get all todos by done status pass done=<true|false> on command line"
 	@echo "	   get-v2-all			Get all todos using version 2"
 	@echo "	   build-amd64-linux	Build amd64/Linux executable"
@@ -62,13 +66,26 @@ load-db:
 	curl -d '{"voter_id":6,"name":"John Doe-6","email":"johnd6@example.com","vote_history":[{"poll_id":10,"vote_id":600,"vote_date":"2024-02-25T09:00:00Z"},{"poll_id":70,"vote_id":71,"vote_date":"2024-02-26T10:00:00Z"}]}' -H "Content-Type: application/json" -X POST http://localhost:1080/voters
 	
 
-.PHONY: update-2
-update-2:
-	curl -d '{ "voter_id":"$(id)","name": "updated name", "email": "updated@email.com"}' -H "Content-Type: application/json" -X PUT http://localhost:1080/voters/$(id) 
+.PHONY: update-by-voterid
+update-by-voterid:
+	curl -d '{ "voter_id":$(id),"name": "updated name", "email": "updated@email.com","vote_history":[{"poll_id":77,"vote_id":88,"vote_date":"2024-02-26T00:00:00Z"},{"poll_id":78,"vote_id":89,"vote_date":"2024-02-26T00:00:00Z"}]}' -H "Content-Type: application/json" -X PUT http://localhost:1080/voters/$(id) 
 
-.PHONY: get-by-id
-get-by-id:
+.PHONY: update-by-pollid
+update-by-pollid:
+	curl -d '{ "poll_id":$(pollid),"vote_id":88,"vote_date":"2099-12-31T23:23:59Z"}' -H "Content-Type: application/json" -X PUT http://localhost:1080/voters/$(id)/polls/$(pollid)
+
+
+.PHONY: get-by-voterid
+get-by-voterid:
 	curl -w "HTTP Status: %{http_code}\n" -H "Content-Type: application/json" -X GET http://localhost:1080/voters/$(id) 
+
+.PHONY: get-polls
+get-polls:
+	curl -w "HTTP Status: %{http_code}\n" -H "Content-Type: application/json" -X GET http://localhost:1080/voters/$(id)/polls 
+
+.PHONY: get-by-pollid
+get-by-pollid:
+	curl -w "HTTP Status: %{http_code}\n" -H "Content-Type: application/json" -X GET http://localhost:1080/voters/$(id)/polls/$(pollid) 
 
 .PHONY: get-all
 get-all:
@@ -78,9 +95,13 @@ get-all:
 delete-all:
 	curl -w "HTTP Status: %{http_code}\n" -H "Content-Type: application/json" -X DELETE http://localhost:1080/voters 
 
-.PHONY: delete-by-id
-delete-by-id:
+.PHONY: delete-by-voterid
+delete-by-voterid:
 	curl -w "HTTP Status: %{http_code}\n" -H "Content-Type: application/json" -X DELETE http://localhost:1080/voters/$(id) 
+
+.PHONY: delete-by-pollid
+delete-by-pollid:
+	curl -w "HTTP Status: %{http_code}\n" -H "Content-Type: application/json" -X DELETE http://localhost:1080/voters/$(id)/polls/$(pollid) 	
 
 .PHONY: get-v2
 get-v2:

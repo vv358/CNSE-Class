@@ -172,6 +172,27 @@ func (vt *VoterAPI) DeleteVoters(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).SendString("Delete OK")
 }
 
+func (vt *VoterAPI) DeleteVotersPoll(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest)
+	}
+
+	pollIdStr := c.Params("pollid")
+	pollId, err := strconv.ParseUint(pollIdStr, 10, 64)
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest)
+	}
+
+	if err := vt.db.DeleteVoterPoll(uint(id), uint(pollId)); err != nil {
+		log.Println("Error deleting item: ", err)
+		return fiber.NewError(http.StatusInternalServerError)
+	}
+
+	return c.Status(http.StatusOK).SendString("Delete OK")
+}
+
 func (vt *VoterAPI) UpdateVoters(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.ParseUint(idStr, 10, 64)
@@ -190,6 +211,31 @@ func (vt *VoterAPI) UpdateVoters(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(voter)
+}
+
+func (vt *VoterAPI) UpdateVotersPoll(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest)
+	}
+	pollIdStr := c.Params("pollid")
+	pollId, err := strconv.ParseUint(pollIdStr, 10, 64)
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest)
+	}
+	var voterHistory db.VoterHistory
+	if err := c.BodyParser(&voterHistory); err != nil {
+		log.Println("Error binding JSON: ", err)
+		return fiber.NewError(http.StatusBadRequest)
+	}
+
+	if err := vt.db.UpdateVoterPoll(uint(id), uint(pollId), voterHistory); err != nil {
+		log.Println("Error updating voter: ", err)
+		return fiber.NewError(http.StatusInternalServerError)
+	}
+
+	return c.JSON(voterHistory)
 }
 
 func (td *VoterAPI) CrashSim(c *fiber.Ctx) error {

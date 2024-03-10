@@ -48,7 +48,9 @@ func main() {
 	//DELETE - Delete
 
 	app.Put("/voters/:id<int>", apiHandler.UpdateVoters)
+	app.Put("/voters/:id<int>/polls/:pollid<int>", apiHandler.UpdateVotersPoll)
 	app.Delete("/voters/:id<int>", apiHandler.DeleteVoters)
+	app.Delete("/voters/:id<int>/polls/:pollid<int>", apiHandler.DeleteVotersPoll)
 	app.Delete("/voters", apiHandler.DeleteAllVoters)
 	app.Get("/voters", apiHandler.ListAllVoters)
 	app.Get("/voters/:id<int>", apiHandler.GetVoters)

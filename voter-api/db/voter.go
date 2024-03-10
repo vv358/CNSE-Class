@@ -247,18 +247,44 @@ func (v *VoterList) DeleteVoter(id uint) error {
 	return nil
 }
 
+func (v *VoterList) DeleteVoterPoll(id uint, pollId uint) error {
+
+	voter, ok := v.Voters[id]
+	if !ok {
+		return errors.New("Voter not found")
+	}
+
+	for i, vote := range voter.VoteHistory {
+		if vote.PollId == pollId {
+			voter.VoteHistory = append(voter.VoteHistory[:i], voter.VoteHistory[i+1:]...)
+			v.Voters[id] = voter
+			return nil
+		}
+	}
+	return nil
+}
+
 func (v *VoterList) UpdateVoter(id uint, voter Voter) error {
 
-	// Check if item exists before trying to update it
-	// this is a good practice, return an error if the
-	// item does not exist
-	// _, ok := v.Voters[id]
-	// if !ok {
-	// 	return errors.New("Voter does not exist")
-	// }
-
-	//Now that we know the item exists, lets update it
 	v.Voters[id] = voter
+
+	return nil
+}
+
+func (v *VoterList) UpdateVoterPoll(id uint, pollId uint, voterHistory VoterHistory) error {
+
+	voter, ok := v.Voters[id]
+	if !ok {
+		return errors.New("voter does not exist")
+	}
+
+	for i, poll := range voter.VoteHistory {
+		if poll.PollId == pollId {
+			voter.VoteHistory[i] = voterHistory
+			v.Voters[id] = voter
+			return nil
+		}
+	}
 
 	return nil
 }
