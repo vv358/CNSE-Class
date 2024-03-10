@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"drexel.edu/todo/db"
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +15,10 @@ import (
 // The api package creates and maintains a reference to the data handler
 // this is a good design practice
 type VoterAPI struct {
-	db *db.VoterList
+	db            *db.VoterList
+	bootTime      time.Time
+	totalRequests uint64
+	totalErrors   uint64
 }
 
 func New() (*VoterAPI, error) {
@@ -23,7 +27,7 @@ func New() (*VoterAPI, error) {
 		return nil, err
 	}
 
-	return &VoterAPI{db: dbHandler}, nil
+	return &VoterAPI{db: dbHandler, bootTime: time.Now(), totalErrors: 0, totalRequests: 45}, nil
 }
 
 func (vt *VoterAPI) ListAllVoters(c *fiber.Ctx) error {
@@ -143,6 +147,51 @@ func (vt *VoterAPI) AddVotersPoll(c *fiber.Ctx) error {
 	return c.JSON(voterPoll)
 }
 
+func (vt *VoterAPI) DeleteAllVoters(c *fiber.Ctx) error {
+
+	if err := vt.db.DeleteAll(); err != nil {
+		log.Println("Error deleting all items: ", err)
+		return fiber.NewError(http.StatusInternalServerError)
+	}
+
+	return c.Status(http.StatusOK).SendString("Delete All OK")
+}
+
+func (vt *VoterAPI) DeleteVoters(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest)
+	}
+
+	if err := vt.db.DeleteVoter(uint(id)); err != nil {
+		log.Println("Error deleting item: ", err)
+		return fiber.NewError(http.StatusInternalServerError)
+	}
+
+	return c.Status(http.StatusOK).SendString("Delete OK")
+}
+
+func (vt *VoterAPI) UpdateVoters(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest)
+	}
+	var voter db.Voter
+	if err := c.BodyParser(&voter); err != nil {
+		log.Println("Error binding JSON: ", err)
+		return fiber.NewError(http.StatusBadRequest)
+	}
+
+	if err := vt.db.UpdateVoter(uint(id), voter); err != nil {
+		log.Println("Error updating voter: ", err)
+		return fiber.NewError(http.StatusInternalServerError)
+	}
+
+	return c.JSON(voter)
+}
+
 func (td *VoterAPI) CrashSim(c *fiber.Ctx) error {
 	//panic() is go's version of throwing an exception
 	//note with recover middleware this will not end program
@@ -174,12 +223,14 @@ func (td *VoterAPI) CrashSim3(c *fiber.Ctx) error {
 // but in a real API you can provide detailed information about the
 // health of your API with a Health Check
 func (td *VoterAPI) HealthCheck(c *fiber.Ctx) error {
+	uptime := time.Since(td.bootTime)
+
 	return c.Status(http.StatusOK).
 		JSON(fiber.Map{
 			"status":             "ok",
 			"version":            "1.0.0",
-			"uptime":             100,
-			"users_processed":    1000,
-			"errors_encountered": 10,
+			"uptime":             uptime.Seconds(),
+			"users_processed":    td.totalRequests,
+			"errors_encountered": td.totalErrors,
 		})
 }

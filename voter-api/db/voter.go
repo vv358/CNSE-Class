@@ -22,41 +22,15 @@ type VoterList struct {
 	Voters map[uint]Voter //A map of VoterIDs as keys and Voter structs as values
 }
 
-// New is a constructor function that returns a pointer to a new
-// ToDo struct.  It takes a single string argument that is the
-// name of the file that will be used to store the ToDo items.
-// If the file doesn't exist, it will be created.  If the file
-// does exist, it will be loaded into the ToDo struct.
 func NewVoterList() (*VoterList, error) {
 
-	//Now that we know the file exists, at at the minimum we have
-	//a valid empty DB, lets create the ToDo struct
 	voterList := &VoterList{
 		Voters: make(map[uint]Voter),
 	}
 
-	// We should be all set here, the ToDo struct is ready to go
-	// so we can support the public database operations
 	return voterList, nil
 }
 
-//------------------------------------------------------------
-// THESE ARE THE PUBLIC FUNCTIONS THAT SUPPORT OUR TODO APP
-//------------------------------------------------------------
-
-// AddItem accepts a ToDoItem and adds it to the DB.
-// Preconditions:   (1) The database file must exist and be a valid
-//
-//					(2) The item must not already exist in the DB
-//	    				because we use the item.Id as the key, this
-//						function must check if the item already
-//	    				exists in the DB, if so, return an error
-//
-// Postconditions:
-//
-//	 (1) The item will be added to the DB
-//		(2) The DB file will be saved with the item added
-//		(3) If there is an error, it will be returned
 func (v *VoterList) AddVoter(item Voter) error {
 
 	//Before we add an item to the DB, lets make sure
@@ -251,6 +225,42 @@ func (v *VoterList) GetAllVoters() ([]Voter, error) {
 
 	//Now that we have all of our items in a slice, return it
 	return voterList, nil
+}
+
+func (v *VoterList) DeleteAll() error {
+	//To delete everything, we can just create a new map
+	//and assign it to our existing map.  The garbage collector
+	//will clean up the old map for us
+	v.Voters = make(map[uint]Voter)
+
+	return nil
+}
+
+func (v *VoterList) DeleteVoter(id uint) error {
+
+	if _, ok := v.Voters[id]; !ok {
+		return errors.New("voter does not exist")
+	}
+
+	delete(v.Voters, id)
+
+	return nil
+}
+
+func (v *VoterList) UpdateVoter(id uint, voter Voter) error {
+
+	// Check if item exists before trying to update it
+	// this is a good practice, return an error if the
+	// item does not exist
+	// _, ok := v.Voters[id]
+	// if !ok {
+	// 	return errors.New("Voter does not exist")
+	// }
+
+	//Now that we know the item exists, lets update it
+	v.Voters[id] = voter
+
+	return nil
 }
 
 // PrintItem accepts a ToDoItem and prints it to the console
