@@ -12,7 +12,7 @@ So for our **VoterAPI**, **PollsAPI**, and **VotesAPI** to work together we coul
   "vote_history": [
     {
       "poll_id": 1,
-      "vote_date": "2024-03-16T12:00:00Z"
+      "vote_date": "2024-03-15T10:00:00Z"
     }
   ],
   "_links": {
@@ -20,10 +20,22 @@ So for our **VoterAPI**, **PollsAPI**, and **VotesAPI** to work together we coul
       "href": "/voters/1"
     },
     "vote_history": {
-      "href": "/voters/1/vote_history"
+      "href": "/voters/1/polls"
+    },
+    "vote_response": {
+      "href": "/votes/voterid/1/pollid/1"
+    },
+    "voters_responses": {
+      "href": "/votes/voterid/1/"
     },
     "make_vote": {
       "href": "/votes"
+    },
+    "poll_info": {
+      "href": "/polls/1"
+    },
+    "all_polls": {
+      "href": "/polls"
     }
   }
 }
