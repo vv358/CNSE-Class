@@ -5,6 +5,7 @@ HATEOAS enables the client to interact with the server with minimal knowledge ab
 So for our **VoterAPI**, **PollsAPI**, and **VotesAPI** to work together we could use hypermedia as below:
 
 ```
+**VoterAPI**
 {
   "voter_id": 1,
   "first_name": "John",
@@ -25,7 +26,7 @@ So for our **VoterAPI**, **PollsAPI**, and **VotesAPI** to work together we coul
     "vote_response": {
       "href": "/votes/voterid/1/pollid/1"
     },
-    "voters_responses": {
+    "voter_responses": {
       "href": "/votes/voterid/1/"
     },
     "make_vote": {
@@ -39,6 +40,10 @@ So for our **VoterAPI**, **PollsAPI**, and **VotesAPI** to work together we coul
     }
   }
 }
-
 ```
+Explanation:
 
+* The _links object contains hypermedia controls for navigating to different resources or actions related to the voter.
+* The self link points to the voter's profile, allowing clients to retrieve more details about the voter.
+* The vote_history link points to the voter's vote history, allowing clients to view the list of polls the voter participated in and the corresponding vote dates.
+* The make_vote link points to the endpoint for making a new vote, allowing clients to initiate the voting process for the voter.
