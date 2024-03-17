@@ -1,1 +1,2 @@
-# CNSE-Class
+Hypermedia as the engine of application state (HATEOAS)
+
