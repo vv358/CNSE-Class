@@ -121,3 +121,12 @@ So for our **VoterAPI**, **PollsAPI**, and **VotesAPI** to work together we coul
 * The **poll** link points to the poll details, allowing clients to view the poll details for which the vote was made.
 
 This way, the hypermedia links enable the clients to dynamically discover and navigate the available resources and actions. 
+
+**References**
+
+> 1. https://youtu.be/ybwo_70jpGc?si=Bq83QYAJ4WJT8Riw
+> 2. https://www.geeksforgeeks.org/hateoas-and-why-its-needed-in-restful-api/
+> 3. I also referred Google and ChatGPT
+
+
+
