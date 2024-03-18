@@ -126,7 +126,7 @@ This way, the hypermedia links enable the clients to dynamically discover and na
 
 > 1. https://youtu.be/ybwo_70jpGc?si=Bq83QYAJ4WJT8Riw
 > 2. https://www.geeksforgeeks.org/hateoas-and-why-its-needed-in-restful-api/
-> 3. I also referred Google and ChatGPT
+> 3. I also referred to Google and ChatGPT.
 
 
 
